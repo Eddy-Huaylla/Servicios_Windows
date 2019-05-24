@@ -1,0 +1,56 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.ServiceProcess;
+using System.Text;
+using System.Threading.Tasks;
+using System.Timers;
+
+namespace ServiciosWindows
+{
+    public partial class Service1 : ServiceBase
+    {
+        public Timer tiempo;
+        public string fecha;
+        static string __RUTA = @"C:\SW\";
+
+        public Service1()
+        {
+            InitializeComponent();
+            tiempo = new Timer();
+            tiempo.Interval = 30000; //30 segundos
+            tiempo.Elapsed += new ElapsedEventHandler(ejecucionIntervalo);
+            fecha = DateTime.Now.ToShortDateString();
+        }
+
+        protected override void OnStart(string[] args)
+        {
+            tiempo.Enabled = true;
+        }
+
+        protected override void OnStop()
+        {
+        }
+
+        private void ejecucionIntervalo(object sender, EventArgs e)
+        {
+            //crear directorio si no existe
+            if (!Directory.Exists(__RUTA))
+            {
+                Directory.CreateDirectory(__RUTA);
+            }
+            
+            //agregar una linea en el archivo respuesta.txt
+            //si no existe el archivo txt se crea automaticamente
+            StreamWriter sw = new StreamWriter(__RUTA + "respuesta.txt", true);
+            string texto = "proceso en la fecha "+fecha;
+            sw.WriteLine(texto);
+            sw.Close();
+        }
+
+    }
+}
